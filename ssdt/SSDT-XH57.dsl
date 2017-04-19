@@ -642,27 +642,6 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
     }
 
 
-    External (_SB.PCI0.LPCB.EC, DeviceObj)
-    External (_SB.PCI0.LPCB.EC.XTC, DeviceObj)
-    Scope (_SB.PCI0.LPCB.EC)
-    {
-        Scope (XTC) { Name (_STA, Zero) }
-        // https://github.com/Piker-Alpha/RevoBoot/wiki/Tiny-SSDT-example-3:-Full-blown-example
-        Device (RTC)
-        {
-            Name (_HID, EisaId ("PNP0B00"))
-            Name (_CRS, ResourceTemplate ()
-            {
-                IO (Decode16,
-                    0x0070,
-                    0x0070,
-                    0x01,
-                    0x08, // Fix for "RTC: Only single RAM bank (128 bytes)"
-                    )
-            })
-        }
-    }
-
     Scope (\_SB)
     {
         Device (USBX)
@@ -725,6 +704,31 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
                 DMA (Compatibility, NotBusMaster, Transfer8_16, )
                     {4}
 	        })
+        }
+        Device (ALS0)
+        {
+            Name (_HID, "ACPI0008")
+            Name (_CID, "smc-als")
+            Name (BUFF, Buffer (0x02) {})
+            CreateByteField (BUFF, Zero, OB0)
+            CreateByteField (BUFF, One, OB1)
+            CreateWordField (BUFF, Zero, ALSI)
+            Method (_STA, 0, NotSerialized) { Return (0x0F) }
+            Method (_ALI, 0, NotSerialized)
+            {
+                OB0 = 0x0A
+                OB1 = Zero
+                Local0 = ALSI
+                Return (Local0)
+            }
+            Name (_ALR, Package (0x05)
+            {
+                Package (0x02) { 0x0A, Zero },
+                Package (0x02) { 0x14, 0x0A },
+                Package (0x02) { 0x32, 0x50 },
+                Package (0x02) { 0x5A, 0x012C },
+                Package (0x02) { 0x64, 0x03E8 },
+            })
         }
     }
 }

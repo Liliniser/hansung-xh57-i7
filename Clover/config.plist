@@ -11,7 +11,7 @@
 			<key>Fixes</key>
 			<dict>
 				<key>FIX_RTC_20000</key>
-				<false/>
+				<true/>
 				<key>FIX_TMR_40000</key>
 				<true/>
 				<key>FixHPET_0010</key>
@@ -185,20 +185,6 @@
 				</dict>
 				<dict>
 					<key>Comment</key>
-					<string>change RTC to XTC</string>
-					<key>Disabled</key>
-					<false/>
-					<key>Find</key>
-					<data>
-					UlRDXw==
-					</data>
-					<key>Replace</key>
-					<data>
-					WFRDXw==
-					</data>
-				</dict>
-				<dict>
-					<key>Comment</key>
 					<string>change PPMC to PMCR</string>
 					<key>Disabled</key>
 					<false/>
@@ -240,6 +226,8 @@
 					</data>
 				</dict>
 			</array>
+			<key>Rtc8Allowed</key>
+			<true/>
 		</dict>
 		<key>DropTables</key>
 		<array>
@@ -364,7 +352,7 @@
 		<key>AppleRTC</key>
 		<true/>
 		<key>AsusAICPUPM</key>
-		<true/>
+		<false/>
 		<key>Debug</key>
 		<false/>
 		<key>FakeCPUID</key>
