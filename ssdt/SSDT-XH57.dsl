@@ -1,23 +1,6 @@
 DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
 {
     ///////////////////////////////////////////////////////////////////////
-    // SSDT-Disable_DGPU : For disabling the discrete GPU
-    ///////////////////////////////////////////////////////////////////////
-    
-    External(_SB.PCI0.PEG0.PEGP._OFF, MethodObj)
-
-    Device(RMD1)
-    {
-        Name(_HID, "RMD10000")
-        Method(_INI)
-        {
-            // disable discrete graphics (Nvidia/Radeon) if it is present
-            If (CondRefOf(\_SB.PCI0.PEG0.PEGP._OFF)) { \_SB.PCI0.PEG0.PEGP._OFF() }
-        }
-    }
-    
-    
-    ///////////////////////////////////////////////////////////////////////
     // SSDT-HDEF : Automatic injection of HDEF properties
     ///////////////////////////////////////////////////////////////////////
     
@@ -364,61 +347,6 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
 
 
     ///////////////////////////////////////////////////////////////////////
-    // SSDT-PTSWAK : Overriding _PTS and _WAK
-    ///////////////////////////////////////////////////////////////////////
-    
-    External(ZPTS, MethodObj)
-    External(ZWAK, MethodObj)
-
-    External(_SB.PCI0.PEG0.PEGP._ON, MethodObj)
-    External(_SB.PCI0.PEG0.PEGP._OFF, MethodObj)
-
-    External(RMCF.DPTS, IntObj)
-    External(RMCF.SHUT, IntObj)
-
-    // In DSDT, native _PTS and _WAK are renamed ZPTS/ZWAK
-    // As a result, calls to these methods land here.
-    Method(_PTS, 1)
-    {
-        // Shutdown fix, if enabled
-        If (CondRefOf(\RMCF.SHUT)) { If (\RMCF.SHUT && 5 == Arg0) { Return } }
-
-        If (CondRefOf(\RMCF.DPTS))
-        {
-            If (\RMCF.DPTS)
-            {
-                // enable discrete graphics
-                If (CondRefOf(\_SB.PCI0.PEG0.PEGP._ON)) { \_SB.PCI0.PEG0.PEGP._ON() }
-            }
-        }
-
-        // call into original _PTS method
-        ZPTS(Arg0)
-    }
-    Method(_WAK, 1)
-    {
-        // Take care of bug regarding Arg0 in certain versions of OS X...
-        // (starting at 10.8.5, confirmed fixed 10.10.2)
-        If (Arg0 < 1 || Arg0 > 5) { Arg0 = 3 }
-
-        // call into original _WAK method
-        Local0 = ZWAK(Arg0)
-
-        If (CondRefOf(\RMCF.DPTS))
-        {
-            If (\RMCF.DPTS)
-            {
-                // disable discrete graphics
-                If (CondRefOf(\_SB.PCI0.PEG0.PEGP._OFF)) { \_SB.PCI0.PEG0.PEGP._OFF() }
-            }
-        }
-
-        // return value from original _WAK
-        Return (Local0)
-    }
-
-
-    ///////////////////////////////////////////////////////////////////////
     // SSDT-SMBUS : Adding SMBUS device
     ///////////////////////////////////////////////////////////////////////
 
@@ -437,8 +365,8 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
             }
         }
     }
-    
-    
+
+
     ///////////////////////////////////////////////////////////////////////
     // SSDT-XHC : Automatic injection of XHC properties
     ///////////////////////////////////////////////////////////////////////
@@ -470,8 +398,8 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
             Return(Local0)
         }
     }
-    
-    
+
+
     ///////////////////////////////////////////////////////////////////////
     // SSDT-XOSI : Override for host defined _OSI to handle "Darwin"...
     ///////////////////////////////////////////////////////////////////////
@@ -710,6 +638,93 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
         // In DSDT, native ADJP is renamed to XDJP with Clover binpatch.
         Method (ADJP, 1)
         {
+        }
+    }
+
+
+    External (_SB.PCI0.LPCB.EC, DeviceObj)
+    External (_SB.PCI0.LPCB.EC.XTC, DeviceObj)
+    Scope (_SB.PCI0.LPCB.EC)
+    {
+        Scope (XTC) { Name (_STA, Zero) }
+        // https://github.com/Piker-Alpha/RevoBoot/wiki/Tiny-SSDT-example-3:-Full-blown-example
+        Device (RTC)
+        {
+            Name (_HID, EisaId ("PNP0B00"))
+            Name (_CRS, ResourceTemplate ()
+            {
+                IO (Decode16,
+                    0x0070,
+                    0x0070,
+                    0x01,
+                    0x08, // Fix for "RTC: Only single RAM bank (128 bytes)"
+                    )
+            })
+        }
+    }
+
+    Scope (\_SB)
+    {
+        Device (USBX)
+        {
+            Name (_ADR, Zero)
+            Method (_DSM, 4, NotSerialized)
+            {
+                If (!Arg2) { Return (Buffer() { 0x03 } ) }
+                Return (Package ()
+                {
+                    // From : /S/L/E/IOUSBHostFamily.kext/C/Info.plist - MacBookPro12,1
+                    "kUSBSleepPortCurrentLimit", 2100,
+                    "kUSBSleepPowerSupply", 2600,
+                    "kUSBWakePortCurrentLimit", 2100,
+                    "kUSBWakePowerSupply", 3200,
+                })
+            }
+        }
+    }
+
+
+    // https://github.com/syscl/XPS9350-macOS/blob/master/DSDT/patches/syscl_SLPB.txt
+    External (_SB.SLPB, DeviceObj)
+    Scope (_SB.SLPB) { Name (_STA, 0x0B) }
+
+
+    // https://github.com/syscl/XPS9350-macOS/blob/master/DSDT/patches/syscl_DMAC.txt
+    External (_SB.PCI0.LPCB, DeviceObj)
+    Scope (_SB.PCI0.LPCB)
+    {
+        Device (DMAC)
+        {
+	        Name (_HID, EisaId ("PNP0200"))
+	        Name (_CRS, ResourceTemplate ()
+	        {
+		        IO (Decode16,
+			        0x0000,
+			        0x0000,
+			        0x01,
+			        0x20,
+			        )
+		        IO (Decode16,
+			        0x0081,
+			        0x0081,
+			        0x01,
+			        0x11,
+			        )
+		        IO (Decode16,
+			        0x0093,
+			        0x0093,
+			        0x01,
+			        0x0D,
+			        )
+		        IO (Decode16,
+			        0x00C0,
+			        0x00C0,
+			        0x01,
+			        0x20,
+			        )
+                DMA (Compatibility, NotBusMaster, Transfer8_16, )
+                    {4}
+	        })
         }
     }
 }

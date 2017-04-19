@@ -11,7 +11,7 @@
 			<key>Fixes</key>
 			<dict>
 				<key>FIX_RTC_20000</key>
-				<true/>
+				<false/>
 				<key>FIX_TMR_40000</key>
 				<true/>
 				<key>FixHPET_0010</key>
@@ -183,6 +183,62 @@
 					WERKUAk=
 					</data>
 				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>change RTC to XTC</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					UlRDXw==
+					</data>
+					<key>Replace</key>
+					<data>
+					WFRDXw==
+					</data>
+				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>change PPMC to PMCR</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					UFBNQw==
+					</data>
+					<key>Replace</key>
+					<data>
+					UE1DUg==
+					</data>
+				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>change PNOT to XNOT</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					UE5PVAig
+					</data>
+					<key>Replace</key>
+					<data>
+					WE5PVAig
+					</data>
+				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>change PEGP _OFF to XOFF</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					X09GRghwCo4=
+					</data>
+					<key>Replace</key>
+					<data>
+					WE9GRghwCo4=
+					</data>
+				</dict>
 			</array>
 		</dict>
 		<key>DropTables</key>
@@ -216,7 +272,7 @@
 	<key>Boot</key>
 	<dict>
 		<key>Arguments</key>
-		<string>dart=0</string>
+		<string>dart=0 darkwake=0</string>
 		<key>Debug</key>
 		<false/>
 		<key>DefaultLoader</key>
