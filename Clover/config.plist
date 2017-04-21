@@ -225,6 +225,20 @@
 					WE9GRghwCo4=
 					</data>
 				</dict>
+				<dict>
+					<key>Comment</key>
+					<string>change D02C to ARPT</string>
+					<key>Disabled</key>
+					<false/>
+					<key>Find</key>
+					<data>
+					RDAyQw==
+					</data>
+					<key>Replace</key>
+					<data>
+					QVJQVA==
+					</data>
+				</dict>
 			</array>
 			<key>Rtc8Allowed</key>
 			<true/>
@@ -597,7 +611,7 @@
 		<key>BooterConfig</key>
 		<string>0x28</string>
 		<key>CsrActiveConfig</key>
-		<string>0x3</string>
+		<string>0x0</string>
 		<key>ROM</key>
 		<string>&lt;rom&gt;</string>
 	</dict>
