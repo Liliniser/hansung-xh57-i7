@@ -563,9 +563,14 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
     Device (UIAC)
     {
         Name (_HID, "UIA00000")
-        
         Name (RMCF, Package ()
         {
+            "AppleBusPowerControllerUSB", Package()
+            {
+                // From MacBookPro13,1 DSDT > USBX
+                "kUSBSleepPortCurrentLimit", 3000,
+                "kUSBWakePortCurrentLimit", 3000,
+            },
             "8086_a12f", Package ()
             {
                 "port-count", Buffer() { 26, 0, 0, 0 },
@@ -649,27 +654,6 @@ DefinitionBlock("", "SSDT", 2, "hack", "XH57", 0)
         // In DSDT, native ADJP is renamed to XDJP with Clover binpatch.
         Method (ADJP, 1)
         {
-        }
-    }
-
-
-    Scope (\_SB)
-    {
-        Device (USBX)
-        {
-            Name (_ADR, Zero)
-            Method (_DSM, 4, NotSerialized)
-            {
-                If (!Arg2) { Return (Buffer() { 0x03 } ) }
-                Return (Package ()
-                {
-                    // From : /S/L/E/IOUSBHostFamily.kext/C/Info.plist - MacBookPro12,1
-                    "kUSBSleepPortCurrentLimit", 2100,
-                    "kUSBSleepPowerSupply", 2600,
-                    "kUSBWakePortCurrentLimit", 2100,
-                    "kUSBWakePowerSupply", 3200,
-                })
-            }
         }
     }
 
