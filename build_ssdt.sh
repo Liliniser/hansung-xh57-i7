@@ -6,7 +6,8 @@ function realpath {
 }
 
 function build_ssdt {
-    "$SCRIPT_DIR/tools/iasl" -vw 2095 -vw 2146 -vw 2089 -vr -oe -p "$SCRIPT_DIR/build/$1.aml" "$SCRIPT_DIR/ssdt/$1.dsl"
+	local name=$(basename "$1" .dsl)
+    "$SCRIPT_DIR/tools/iasl" -vw 2095 -vw 2146 -vw 2089 -vr -oe -p "$SCRIPT_DIR/build/$name.aml" "$SCRIPT_DIR/ssdt/$name.dsl"
 }
 
 SCRIPT_DIR=`dirname $(realpath "$0")`
@@ -21,7 +22,5 @@ fi
 rm -f "$SCRIPT_DIR/build/*.aml"
 chmod +x "$SCRIPT_DIR/tools/iasl"
 
-build_ssdt SSDT-XH57
-build_ssdt SSDT-Config
-build_ssdt SSDT-DGPU_PTSWAK
-
+# https://stackoverflow.com/a/26349346
+find "$SCRIPT_DIR/ssdt" -name "*.dsl" -print0 | while IFS= read -r -d '' file; do build_ssdt "$file"; done
