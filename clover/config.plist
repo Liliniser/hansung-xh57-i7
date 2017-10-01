@@ -313,6 +313,8 @@
 		</array>
 		<key>Theme</key>
 		<string>embedded</string>
+		<key>TextOnly</key>
+		<true/>
 	</dict>
 	<key>Graphics</key>
 	<dict>
