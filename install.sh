@@ -46,9 +46,7 @@ cp -f $SCRIPT_DIR/clover/drivers64UEFI/* $CLOVER/drivers64UEFI/
 cp -rf $SCRIPT_DIR/clover/kexts/* $CLOVER/kexts/
 TS=`date +%Y%m%d%H%M%S`
 cp -f $CLOVER/config.plist $CLOVER/config.plist_$TS.bak >/dev/null 2>&1
-cp -f $CLOVER/smbios.plist $CLOVER/smbios.plist_$TS.bak >/dev/null 2>&1
 cp -f $SCRIPT_DIR/clover/config.plist $CLOVER/
-cp -f $SCRIPT_DIR/clover/smbios.plist $CLOVER/
 
 sudo diskutil umount $EFI
 rm -rf $SCRIPT_DIR/build/*
