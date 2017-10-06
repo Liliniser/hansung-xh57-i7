@@ -7,7 +7,8 @@ function realpath {
 
 function build_ssdt {
 	local name=$(basename "$1" .dsl)
-    "$SCRIPT_DIR/tools/iasl" -vw 2095 -vw 2146 -vw 2089 -vr -oe -p "$SCRIPT_DIR/build/$name.aml" "$SCRIPT_DIR/ssdt/$name.dsl"
+    local ret=`"$SCRIPT_DIR/tools/iasl" -vw 2095 -vw 2146 -vw 2089 -vr -oe -p "$SCRIPT_DIR/build/$name.aml" "$SCRIPT_DIR/ssdt/$name.dsl" | grep "Compilation complete"`
+    echo " - $name.aml : $ret"
 }
 
 SCRIPT_DIR=`dirname $(realpath "$0")`
