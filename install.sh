@@ -48,6 +48,12 @@ TS=`date +%Y%m%d%H%M%S`
 cp -f $CLOVER/config.plist $CLOVER/config.plist_$TS.bak >/dev/null 2>&1
 cp -f $SCRIPT_DIR/clover/config.plist $CLOVER/
 
+if [[ -f $SCRIPT_DIR/g_config.sh ]]; then
+    $SCRIPT_DIR/g_config.sh "$CLOVER"
+fi
+
+sync
+
 sudo diskutil umount $EFI
 rm -rf $SCRIPT_DIR/build/*
 
